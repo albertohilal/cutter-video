@@ -1,6 +1,16 @@
+Perfecto.
+Te dejo **el README completo, corregido, consistente y listo para copiar y pegar**, incorporando los ajustes finos que te mencioné **sin agregar features que no existan**.
+
+---
+
+````md
 # Video Cutter
 
 Herramienta automatizada para cortar videos largos en múltiples clips usando timestamps definidos en `chapters.txt` y subtítulos `.srt` para máxima precisión.
+
+El sistema permite generar **videos por capítulo** y **subtítulos independientes por capítulo**, sin quemarlos ni embeberlos en el video.
+
+---
 
 ## 🚀 Características
 
@@ -8,15 +18,27 @@ Herramienta automatizada para cortar videos largos en múltiples clips usando ti
 - 📝 **Generación automática de SRT**: Crea archivos de subtítulos sincronizados por capítulo
 - 🎯 **Alta precisión**: Usa subtítulos para calcular duraciones exactas
 - ⚡ **Modo rápido**: Sin recodificación (`copy`) o recodificación segura (`reencode`)
-- 🎬 **3 modos de corte**: `chapters`, `srt`, `chapters+srt`
+- 🎬 **Modos de corte configurables** mediante `cutMode`
 - 🧹 **Sanitización automática**: Nombres de archivo seguros y compatibles
-- 🔧 **Configurable**: Toda la configuración en un solo archivo
+- 🔧 **Configurable**: Toda la configuración centralizada en `config.js`
+- 📦 **Sin dependencias npm externas** (solo Node.js + FFmpeg)
+
+---
 
 ## 📋 Requisitos
 
-- Node.js (v14 o superior)
+- Node.js v14 o superior
 - FFmpeg instalado en el sistema
 - FFprobe (incluido con FFmpeg)
+
+Verificar instalación:
+
+```bash
+node -v
+ffmpeg -version
+````
+
+---
 
 ## 🛠️ Instalación
 
@@ -25,31 +47,45 @@ Herramienta automatizada para cortar videos largos en múltiples clips usando ti
 git clone https://github.com/albertohilal/cutter-video.git
 cd cutter-video
 
-# Instalar dependencias (ninguna externa requerida)
+# No requiere dependencias externas
 npm install
 ```
+
+---
 
 ## 📁 Estructura del Proyecto
 
 ```
 cutter-video/
-├── input/              # Videos y subtítulos de entrada
-│   ├── video.mp4      # Video a cortar (cualquier nombre)
-│   └── subtitles.srt  # Subtítulos opcionales
-├── output/            # Videos y SRT generados
+├── input/              # Video y subtítulos de entrada
+│   ├── video.mp4       # Video a cortar (nombre libre)
+│   └── subtitles.srt   # Subtítulos completos (opcional)
+├── output/             # Videos y SRT generados
 ├── scripts/
-│   ├── cut.js         # Script principal
+│   ├── cut.js          # Script principal
 │   └── helpers.js     # Funciones auxiliares
-├── chapters.txt       # Definición de capítulos
-├── config.js          # Configuración
+├── chapters.txt        # Definición de capítulos
+├── config.js           # Configuración central
 └── package.json
 ```
 
+---
+
 ## 📝 Uso
 
-### 1. Preparar archivos
+### 1. Preparar los archivos
 
-**chapters.txt** (obligatorio):
+### `chapters.txt` (obligatorio)
+
+Formato:
+
+```
+MM:SS|Título del capítulo
+HH:MM:SS|Título largo
+```
+
+Ejemplo:
+
 ```
 00:00|Introducción al Curso
 00:46|Requerimientos
@@ -57,74 +93,106 @@ cutter-video/
 03:50|Instalación
 ```
 
-**input/video.mp4**: Coloca tu video en la carpeta `input/`
+### Video de entrada
 
-**input/subtitles.srt** (opcional): Para mayor precisión
+Colocar **un solo archivo de video** en `input/`.
+Extensiones soportadas:
 
-### 2. Configurar
+* `.mp4`
+* `.webm`
+* `.mkv`
+* `.avi`
+* `.mov`
 
-Edita `config.js`:
+El sistema detecta automáticamente el archivo.
 
-```javascript
-{
-  cutMode: "chapters",    // "chapters" | "srt" | "chapters+srt"
-  mode: "copy",           // "copy" (rápido) | "reencode" (seguro)
+### Subtítulos (opcional, recomendado)
+
+Colocar el archivo completo de subtítulos en:
+
+```
+input/subtitles.srt
+```
+
+Si existe, se utilizará para calcular duraciones con **mayor precisión**.
+
+---
+
+## ⚙️ Configuración (`config.js`)
+
+Ejemplo básico:
+
+```js
+module.exports = {
+  cutMode: "chapters",   // "chapters" | "chapters+srt"
+  mode: "copy",          // "copy" (rápido) | "reencode" (seguro)
+
   sanitize: {
-    replaceSpaces: "-",   // Reemplazar espacios con guiones
+    replaceSpaces: "-",
     lowercase: false,
     maxLength: 200
   }
-}
+};
 ```
 
-### 3. Ejecutar
+---
 
-```bash
-node scripts/cut.js
-```
-
-## 🎯 Modos de Corte
+## 🎯 Modos de Corte (`cutMode`)
 
 ### `chapters` (por defecto)
-Corta usando `chapters.txt`. Si existe `subtitles.srt`, refina las duraciones automáticamente.
 
-**Salida:**
-- `01 - Introduccion.mp4`
-- `01 - Introduccion.srt`
-- `02 - Requerimientos.mp4`
-- `02 - Requerimientos.srt`
+* Usa `chapters.txt` como fuente de inicio
+* Si existe `subtitles.srt`, refina las duraciones automáticamente
+* Genera **video + SRT por capítulo**
 
-### `srt`
-Genera un video por cada subtítulo del archivo SRT.
+Salida:
 
-**Uso:**
-```javascript
-cutMode: "srt"
 ```
+01 - Introduccion.mp4
+01 - Introduccion.srt
+02 - Requerimientos.mp4
+02 - Requerimientos.srt
+```
+
+---
 
 ### `chapters+srt`
-Combina capítulos con precisión máxima usando subtítulos agrupados.
 
-**Uso:**
-```javascript
-cutMode: "chapters+srt"
-```
+* Usa capítulos como base
+* Agrupa subtítulos dentro de cada rango
+* Calcula el final del capítulo usando el último subtítulo
+* Máxima precisión temporal
 
-## ⚙️ Configuración Avanzada
+Recomendado para cursos largos.
 
-### Modos de exportación
+---
 
-**Modo Copy (rápido)**
-```javascript
+### `srt` (experimental)
+
+Modo experimental que corta clips basándose únicamente en subtítulos.
+
+⚠️ No recomendado para videos largos sin revisión manual.
+
+---
+
+## ⚡ Modos de Exportación
+
+### Modo rápido (copy)
+
+```js
 mode: "copy"
 ```
-- Sin recodificación
-- Procesamiento ultrarrápido
-- Conserva calidad original
-- Puede tener problemas con timestamps inexactos
 
-**Modo Reencode (seguro)**
-```javascript
+* Sin recodificación
+* Procesamiento ultrarrápido
+* Conserva calidad original
+* Puede fallar con timestamps imprecisos
+
+---
+
+### Modo seguro (reencode)
+
+```js
 mode: "reencode",
 reencode: {
   videoCodec: "libx264",
@@ -134,15 +202,19 @@ reencode: {
 }
 ```
 
-### Sanitización de nombres
+* Recodificación completa
+* Máxima compatibilidad
+* Más lento
 
-```javascript
-sanitize: {
-  replaceSpaces: "-",    // "-" | "_" | " "
-  lowercase: false,      // true para minúsculas
-  maxLength: 200         // Longitud máxima
-}
+---
+
+## ▶️ Ejecutar
+
+```bash
+node scripts/cut.js
 ```
+
+---
 
 ## 📊 Ejemplo de Salida
 
@@ -164,59 +236,72 @@ sanitize: {
 ✅ Completado
 📝 Subtítulos: 01 - Introduccion.srt (27 bloques)
 
-[2/36] Requerimientos
-    Inicio: 00:46 | Duración: 00:00:56
-✅ Completado
-📝 Subtítulos: 02 - Requerimientos.srt (31 bloques)
-
 ══════════════════════════════════════════════════
 🎉 Proceso completado exitosamente
-📁 Videos en: output/
+📁 Archivos generados en: output/
 ```
+
+---
 
 ## 🔧 Solución de Problemas
 
 ### El video no se detecta
-- Verifica que el archivo esté en `input/`
-- Extensiones soportadas: `.mp4`, `.webm`, `.mkv`, `.avi`, `.mov`
-- Solo debe haber **un** archivo de video en `input/`
+
+* Verificar que haya **un solo video** en `input/`
+* Revisar extensiones soportadas
 
 ### Errores de FFmpeg
-- Asegúrate de tener FFmpeg instalado: `ffmpeg -version`
-- Prueba con `mode: "reencode"` si `copy` falla
 
-### Caracteres especiales en nombres
-- El sistema sanitiza automáticamente
-- Configura `replaceSpaces` según prefieras
+* Confirmar instalación: `ffmpeg -version`
+* Probar con `mode: "reencode"`
 
 ### No se generan SRT
-- Verifica que `input/subtitles.srt` exista
-- Formato SRT válido requerido
+
+* Verificar `input/subtitles.srt`
+* Comprobar formato SRT válido
+
+### Caracteres especiales en títulos
+
+* El sistema sanitiza automáticamente los nombres
+* Configurable desde `config.js`
+
+---
+
+## ⚠️ Nota importante sobre subtítulos
+
+Los archivos `.srt` generados son **independientes**.
+No se queman ni se embeben en los videos.
+
+---
 
 ## 🤝 Contribuir
 
-Las contribuciones son bienvenidas. Por favor:
+1. Fork del repositorio
+2. Crear rama (`git checkout -b feature/nueva-feature`)
+3. Commit (`git commit -m "Agregar nueva feature"`)
+4. Push (`git push origin feature/nueva-feature`)
+5. Abrir Pull Request
 
-1. Fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit de cambios (`git commit -m 'Add AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+---
 
 ## 📄 Licencia
 
-MIT License - ver el archivo [LICENSE](LICENSE) para más detalles.
+MIT License
+Ver archivo [LICENSE](LICENSE)
+
+---
 
 ## 👤 Autor
 
 **Alberto Hilal**
-- GitHub: [@albertohilal](https://github.com/albertohilal)
-
-## 🙏 Agradecimientos
-
-- FFmpeg por el procesamiento de video
-- Comunidad Node.js
+GitHub: [https://github.com/albertohilal](https://github.com/albertohilal)
 
 ---
 
-**Nota:** Este proyecto no incluye dependencias externas de npm, solo módulos nativos de Node.js.
+## 🙏 Agradecimientos
+
+* FFmpeg por el procesamiento de video
+* Comunidad Node.js
+
+```
+
