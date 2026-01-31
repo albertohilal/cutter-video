@@ -1,9 +1,3 @@
-Perfecto.
-Te dejo **el README completo, corregido, consistente y listo para copiar y pegar**, incorporando los ajustes finos que te mencioné **sin agregar features que no existan**.
-
----
-
-````md
 # Video Cutter
 
 Herramienta automatizada para cortar videos largos en múltiples clips usando timestamps definidos en `chapters.txt` y subtítulos `.srt` para máxima precisión.
