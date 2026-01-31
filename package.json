@@ -1,0 +1,12 @@
+{
+  "name": "cutter-video",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+  "cut": "node scripts/cut.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

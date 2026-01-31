@@ -1,0 +1,36 @@
+00:00|Introducción al Curso de Nodejs
+00:46|Requerimientos
+01:38|Qué es Nodejs
+03:50|Instalación de Nodejs
+06:37|REPL
+24:10|Visual Studio Code
+26:17|Hello World
+29:27|Javascript en Nodejs
+42:16|Browser vs Nodejs
+46:09|Global Objects
+49:27|Timers
+52:15|CommonJS Modules
+01:03:35|Exports individuales
+01:09:32|Primer módulo
+01:15:50|Módulo os
+01:22:07|Módulo path
+01:30:12|Módulo fs (sync)
+01:37:21|Módulo fs (async)
+01:50:35|Módulo http
+01:59:08|HTTP requests
+02:09:03|npm
+02:23:46|npm init
+02:41:19|Módulos globales
+02:45:00|npx
+02:57:25|Event loop
+03:07:44|Promises
+03:17:04|Async / Await
+03:25:51|Promisify
+03:29:12|FS promises
+03:31:54|Events
+03:42:47|Streams
+03:55:19|Streams y http
+04:02:40|Ecmascript modules
+04:14:16|Fetch
+04:20:48|Express
+04:31:07|Deploy

@@ -1,0 +1,31 @@
+# Carpetas auxiliares
+AUXILIAR/
+
+# Node modules
+node_modules/
+
+# Output videos (no versionar archivos grandes)
+output/
+
+# Input videos (no versionar videos de entrada)
+input/*.mp4
+input/*.mkv
+input/*.webm
+input/*.avi
+input/*.mov
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Temporal
+*.tmp
+*.bak
