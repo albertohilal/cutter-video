@@ -5,14 +5,12 @@ AUXILIAR/
 node_modules/
 
 # Output videos (no versionar archivos grandes)
-output/
+output/*
+!output/.gitkeep
 
 # Input videos (no versionar videos de entrada)
-input/*.mp4
-input/*.mkv
-input/*.webm
-input/*.avi
-input/*.mov
+input/*
+!input/.gitkeep
 
 # Logs
 *.log
