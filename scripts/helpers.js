@@ -195,6 +195,53 @@ function buildChapterRangesFromSRT(chapters, subtitles, videoDuration) {
   });
 }
 
+/**
+ * Convierte segundos a formato SRT (HH:MM:SS,mmm)
+ */
+function secondsToSRTTime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  const ms = Math.floor((seconds % 1) * 1000);
+
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+}
+
+/**
+ * Filtra y ajusta subtítulos para un rango temporal específico
+ * Los timestamps se recalculan para empezar en 00:00:00,000
+ */
+function sliceSRTByRange(subtitles, startSeconds, endSeconds) {
+  const filtered = subtitles.filter(sub => {
+    // Incluir si el subtítulo intersecta con el rango
+    return sub.startSeconds < endSeconds && sub.endSeconds > startSeconds;
+  });
+
+  // Recalcular timestamps relativos al inicio del capítulo
+  return filtered.map(sub => ({
+    startSeconds: Math.max(0, sub.startSeconds - startSeconds),
+    endSeconds: Math.min(endSeconds - startSeconds, sub.endSeconds - startSeconds),
+    text: sub.text
+  }));
+}
+
+/**
+ * Convierte un array de subtítulos a formato SRT string
+ */
+function formatSRT(subtitles) {
+  if (!subtitles || subtitles.length === 0) {
+    return '';
+  }
+
+  return subtitles.map((sub, index) => {
+    const num = index + 1;
+    const start = secondsToSRTTime(sub.startSeconds);
+    const end = secondsToSRTTime(sub.endSeconds);
+    
+    return `${num}\n${start} --> ${end}\n${sub.text}\n`;
+  }).join('\n');
+}
+
 module.exports = {
   timeToSeconds,
   secondsToTime,
@@ -204,5 +251,8 @@ module.exports = {
   getOutputFilename,
   parseSRT,
   buildChaptersFromSRT,
-  buildChapterRangesFromSRT
+  buildChapterRangesFromSRT,
+  sliceSRTByRange,
+  secondsToSRTTime,
+  formatSRT
 };

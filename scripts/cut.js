@@ -3,7 +3,7 @@ const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
 const config = require('../config');
-const { parseChapters, getOutputFilename, parseSRT, buildChaptersFromSRT, buildChapterRangesFromSRT } = require('./helpers');
+const { parseChapters, getOutputFilename, parseSRT, buildChaptersFromSRT, buildChapterRangesFromSRT, sliceSRTByRange, formatSRT } = require('./helpers');
 
 const execAsync = promisify(exec);
 
@@ -134,6 +134,43 @@ async function cutChapter(inputVideo, chapter, outputFile, index, total) {
 }
 
 /**
+ * Genera archivo SRT para un capítulo específico
+ */
+async function generateChapterSRT(chapter, subtitles, outputFile, index, total) {
+  if (!subtitles || subtitles.length === 0) {
+    return; // No hay subtítulos disponibles
+  }
+  
+  // Calcular duración en segundos si no está disponible
+  let durationSeconds = chapter.durationSeconds;
+  if (!durationSeconds && chapter.duration) {
+    const { timeToSeconds } = require('./helpers');
+    durationSeconds = timeToSeconds(chapter.duration);
+  }
+  
+  if (!durationSeconds) {
+    return; // No se puede calcular el rango del capítulo
+  }
+  
+  const endSeconds = chapter.startSeconds + durationSeconds;
+  const chapterSubs = sliceSRTByRange(subtitles, chapter.startSeconds, endSeconds);
+  
+  if (chapterSubs.length === 0) {
+    return; // No hay subtítulos para este capítulo
+  }
+  
+  const srtContent = formatSRT(chapterSubs);
+  const srtFile = outputFile.replace(/\.mp4$/, '.srt');
+  
+  try {
+    fs.writeFileSync(srtFile, srtContent, 'utf-8');
+    console.log(`📝 Subtítulos: ${path.basename(srtFile)} (${chapterSubs.length} bloques)`);
+  } catch (error) {
+    console.warn(`⚠️  No se pudo generar SRT para capítulo ${index}`);
+  }
+}
+
+/**
  * Proceso principal
  */
 async function main() {
@@ -176,6 +213,9 @@ async function main() {
       
       try {
         await cutChapter(inputVideo, chapter, outputFile, i + 1, chapters.length);
+        
+        // Generar SRT individual para este clip
+        await generateChapterSRT(chapter, subtitles, outputFile, i + 1, chapters.length);
       } catch (error) {
         errors++;
       }
@@ -215,12 +255,14 @@ async function main() {
   const chaptersContent = fs.readFileSync(CHAPTERS_FILE, 'utf-8');
   let chapters = parseChapters(chaptersContent, videoDuration);
   
-  // Intentar cargar subtítulos para refinar duraciones
+  // Intentar cargar subtítulos para refinar duraciones y generar SRTs
   let usingSRT = false;
+  let subtitles = null;
+  
   if (fs.existsSync(SUBTITLES_FILE)) {
     try {
       const srtContent = fs.readFileSync(SUBTITLES_FILE, 'utf-8');
-      const subtitles = parseSRT(srtContent);
+      subtitles = parseSRT(srtContent);
       
       if (subtitles.length > 0) {
         chapters = refineDurationsWithSRT(chapters, subtitles);
@@ -252,6 +294,11 @@ async function main() {
     
     try {
       await cutChapter(inputVideo, chapter, outputFile, i + 1, chapters.length);
+      
+      // Generar SRT si hay subtítulos disponibles
+      if (subtitles && subtitles.length > 0) {
+        await generateChapterSRT(chapter, subtitles, outputFile, i + 1, chapters.length);
+      }
     } catch (error) {
       errors++;
     }
