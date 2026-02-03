@@ -1,14 +1,11 @@
-00:00:00|Introducción y contexto de la clase
-00:07:42|Configuración inicial y explicación del entorno
-00:15:18|Primer bloque práctico guiado
-00:24:06|Tiempo de práctica individual (silencio prolongado)
-00:31:54|Corrección colectiva y aclaraciones
-00:40:12|Segundo bloque conceptual
-00:48:55|Práctica guiada paso a paso
-00:57:30|Tiempo de trabajo individual (silencio)
-01:06:48|Resolución de dudas y ajustes
-01:16:05|Nuevo concepto y ejemplo aplicado
-01:25:22|Práctica libre (silencio prolongado)
-01:34:40|Correcciones y cierre del ejercicio
-01:44:10|Explicación final y recomendaciones
-01:52:30|Espacio de consulta / cierre informal
+1	00:01:18	00:08:34	Presentacion_de_la_clase
+2	00:10:40	02:15:35	Crear_Cluste_en_Mongo_DB
+3	00:17:56	00:20:54	Seguridad_crear_usario_y_clave
+4	00:24:53	00:29:17	Agregar_IP
+5	00:33:49	00:36:11	Instalar_mongoose
+6	00:44:47	00:48:41	Instalar_dotenv
+7	01:02:35	01:08:35	Crear_carpeta_config_y_conectar_de_DB
+8	01:17:00	01:26:15	Exportar_modelos
+9	01:26:12	01:31:59	Instalar_Express
+10	01:31:56	01:42:02	Verificar_en_Postman
+11	01:42:04	01:54:21	Crear_Router

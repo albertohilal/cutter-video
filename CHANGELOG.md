@@ -135,6 +135,17 @@ No se agregaron nuevas dependencias npm. El proyecto sigue usando:
 
 ---
 
+## [1.1.0] - 2026-02-03
+### Added
+- Soporte para procesar subtítulos (`subtitles.srt`) y generar archivos SRT para cada capítulo.
+- Función `generateChapterSRT` para manejar subtítulos por capítulo.
+- Función `buildFFmpegCommand` para construir dinámicamente los comandos de ffmpeg.
+- Ajustes para leer capítulos desde `chapters.txt` y procesarlos automáticamente.
+
+### Fixed
+- Definición de las variables `ROOT_DIR`, `INPUT_DIR` y `OUTPUT_DIR` para evitar errores de ejecución.
+- Implementación de la función `cutChapter` para cortar capítulos correctamente.
+
 **Autor**: Alberto Hilal/GitHub Copilot  
 **Fecha**: 31 de enero de 2026  
 **Versión anterior**: 1.0.0 (básica, sin configuración)  
